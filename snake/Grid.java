@@ -11,6 +11,8 @@ public class Grid {
     
     // Default direction to be right
     private Direction snakeDirection = Direction.LEFT;
+
+    private Direction beforeDirection = Direction.LEFT;
 	
     public Grid(int width, int height) {
     	this.width = width;
@@ -77,7 +79,7 @@ public class Grid {
     }
     
     public void changeDirection(Direction newDirection) {
-    	if(snakeDirection.compatibleWith(newDirection)) {
+    	if(beforeDirection.compatibleWith(newDirection)) {
     		snakeDirection = newDirection;
     	}
     }
@@ -117,4 +119,16 @@ public class Grid {
     public Snake getSnake() {
     	return this.snake;
     }
+
+	public Direction getSnakeDirection() {
+		return snakeDirection;
+	}
+
+	public void setBeforeDirection (Direction newDirection) {
+    	beforeDirection = newDirection;
+	}
+
+	public Direction getBeforeDirection (){
+		return beforeDirection;
+	}
 }

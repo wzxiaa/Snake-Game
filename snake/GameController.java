@@ -5,7 +5,6 @@ public class GameController implements Runnable, KeyListener {
 	
 	private final Grid grid;
 	private final GameView gameView;
-	
 	private boolean running;
 	
 	public GameController(Grid grid, GameView gameView) {
@@ -16,33 +15,24 @@ public class GameController implements Runnable, KeyListener {
 	
 	@Override
 	public void run() {
+
 		while(running) {
+			this.grid.setBeforeDirection(this.grid.getSnakeDirection());
+
             try {
                 Thread.sleep(Settings.DEFAULT_MOVE_INTERVAL);
             } catch (InterruptedException e) {
                 break;
             }
+
 			if(grid.nextRound()) {
-            	while(!running){
-					try {
-						Thread.sleep(Settings.DEFAULT_MOVE_INTERVAL);
-					} catch (InterruptedException e) {
-						break;
-					}
-				}
             	gameView.draw();
 			}
+
 			else{
             	//gameView.showGameOverMessage();
 				System.out.println("Game Over!");
-            	running = false;
-				while(!running){
-					try {
-						Thread.sleep(Settings.DEFAULT_MOVE_INTERVAL);
-					} catch (InterruptedException e) {
-						break;
-					}
-				}
+				running = false;
 			}
         }
         running = false;
@@ -50,44 +40,53 @@ public class GameController implements Runnable, KeyListener {
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
+
 		int keyCode = e.getKeyCode();
 
 		switch(keyCode) {
 			case KeyEvent.VK_UP:
-				grid.changeDirection(Direction.UP);
+				if(this.grid.getBeforeDirection().compatibleWith(Direction.UP)) {
+					grid.changeDirection(Direction.UP);
+				}
 				break;
-				
+
 			case KeyEvent.VK_DOWN:
-				grid.changeDirection(Direction.DOWN);
+				if(this.grid.getBeforeDirection().compatibleWith(Direction.DOWN)) {
+					grid.changeDirection(Direction.DOWN);
+				}
 				break;
 
 			case KeyEvent.VK_LEFT:
-				grid.changeDirection(Direction.LEFT);
+				if(this.grid.getBeforeDirection().compatibleWith(Direction.LEFT)) {
+					grid.changeDirection(Direction.LEFT);
+				}
 				break;
 				
 			case KeyEvent.VK_RIGHT:
-				grid.changeDirection(Direction.RIGHT);
+				if(this.grid.getBeforeDirection().compatibleWith(Direction.RIGHT)) {
+					grid.changeDirection(Direction.RIGHT);
+				}
+				break;
+
+			case KeyEvent.VK_SPACE:
+				if(!running) {
+					running = true;
+					new Thread(this).start();
+				}
+				else {
+					running = false;
+				}
+				break;
+
+			case KeyEvent.VK_ENTER:
+				if(!running ) {
+					running = true;
+					new Thread(this).start();
+					grid.init();
+				}
 				break;
 
 			default:
-		}
-
-		if(keyCode == KeyEvent.VK_SPACE) {
-			if(running == true) {
-				System.out.println("Game paused");
-			}
-			else {
-				System.out.println("Game resumed");
-			}
-			running = !running;
-		}
-
-		if(keyCode == KeyEvent.VK_ENTER) {
-			if(running == false) {
-				running = true;
-				grid.init();
-				System.out.println("Game restart!");
-			}
 		}
 	}
 	
